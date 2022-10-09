@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function App() {
   const [todoText, setTodoText] = useState("");
@@ -6,10 +6,21 @@ function App() {
   const [isEdit, setIsEdit] = useState(false);
   const [willUpdateTodo, setWillUpdateTodo] = useState("");
 
+  useEffect(() => {
+    const todosFromLocalStorage = localStorage.getItem("todos");
+    console.log("todosFromLocalStorage", todosFromLocalStorage);
+    if (todosFromLocalStorage === null) {
+      localStorage.setItem("todos", JSON.stringify([]));
+    } else {
+      setTodos(JSON.parse(todosFromLocalStorage));
+    }
+  }, []);
+
   const deleteTodo = (id) => {
     console.log("deleting id", id);
     const filteredTodos = todos.filter((item) => item.id !== id);
     setTodos(filteredTodos);
+    localStorage.setItem("todos", JSON.stringify(filteredTodos));
   };
 
   const changeIsDone = (id) => {
@@ -20,6 +31,10 @@ function App() {
     };
     const filteredTodos = todos.filter((item) => item.id !== id);
     setTodos([updatedTodo, ...filteredTodos]);
+    localStorage.setItem(
+      "todos",
+      JSON.stringify([updatedTodo, ...filteredTodos])
+    );
     console.log("filtered todos", filteredTodos);
   };
 
@@ -44,6 +59,10 @@ function App() {
       };
       const filteredTodos = todos.filter((item) => item.id !== willUpdateTodo);
       setTodos([...filteredTodos, updatedTodo]);
+      localStorage.setItem(
+        "todos",
+        JSON.stringify([...filteredTodos, updatedTodo])
+      );
       setTodoText("");
       setIsEdit(false);
       setWillUpdateTodo("");
@@ -54,9 +73,10 @@ function App() {
         text: todoText,
         date: new Date(),
       };
-      setTodos([newTodo, ...todos]);
-      setTodoText("");
       console.log("newtodo", newTodo);
+      setTodos([...todos, newTodo]);
+      localStorage.setItem("todos", JSON.stringify([...todos, newTodo]));
+      setTodoText("");
     }
   };
 
