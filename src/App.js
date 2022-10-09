@@ -3,6 +3,15 @@ import React, { useState } from "react";
 function App() {
   const [todoText, setTodoText] = useState("");
   const [todos, setTodos] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
+
+  const editTodo = (id) => {
+    console.log("edittodo id", id);
+    setIsEdit(true);
+    const searchedTodo = todos.find((item) => item.id === id);
+    setTodoText(searchedTodo.text);
+  };
+
   const changeIsDone = (id) => {
     const searchedTodo = todos.find((item) => item.id === id);
     const updatedTodo = {
@@ -11,9 +20,9 @@ function App() {
     };
     const filteredTodos = todos.filter((item) => item.id !== id);
     setTodos([updatedTodo, ...filteredTodos]);
-    console.log(filteredTodos);
+    console.log("filtered todos", filteredTodos);
   };
-  const doneText = (text) => {};
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -34,12 +43,7 @@ function App() {
     };
     setTodos([newTodo, ...todos]);
     setTodoText("");
-
-    /*const newTodoList=todos
-    newTodoList.push(newTodo)
-    setTodos(newTodoList)*/
-
-    console.log(newTodo);
+    console.log("newtodo", newTodo);
   };
 
   return (
@@ -64,14 +68,35 @@ function App() {
       ) : (
         <>
           {todos.map((item) => (
-            <div className="alert alert-secondary d-flex justify-content-between align-items-center">
-              <p>{item.text}</p>
-              <button
-                onClick={() => changeIsDone(item.id)}
-                className="btn btn-sm btn-success "
+            <div
+              style={{ textDecorationLine: "" }}
+              className={`alert alert-${
+                item.isDone === false ? "secondary" : "danger"
+              } d-flex justify-content-between align-items-center`}
+            >
+              <p
+                style={{
+                  textDecorationLine: `${
+                    item.isDone === true ? "line-through" : "none"
+                  }`,
+                }}
               >
-                {item.isDone === false ? "Done" : "Undone"}
-              </button>
+                {item.text}
+              </p>
+              <div>
+                <button
+                  className="btn btn-sm btn-warning me-1"
+                  onClick={() => editTodo(item.id)}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => changeIsDone(item.id)}
+                  className="btn btn-sm btn-success "
+                >
+                  {item.isDone === false ? "Done" : "Undone"}
+                </button>
+              </div>
             </div>
           ))}
         </>
